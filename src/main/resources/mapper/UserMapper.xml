@@ -6,7 +6,28 @@
     <sql id="fileds">
         id, username, password, salt, email, type, status, activation_code, header_url, create_time
     </sql>
+
+    <sql id="insertFileds">
+        username, password, salt, email, type, status, activation_code, header_url, create_time
+    </sql>
+
     <select id="getUserById" resultType="User">
         SELECT <include refid="fileds"></include> FROM user where id = #{userId}
     </select>
+
+    <insert id="insertUser" parameterType="User" keyProperty="id">
+        insert into user (<include refid="insertFileds"></include>) values(#{username}, #{password}, #{salt}, #{email}, #{type}, #{status}, #{activationCode}, #{headerUrl}, #{createTime})
+    </insert>
+
+    <select id="selectByName" resultType="User">
+        SELECT <include refid="fileds"></include> FROM user where username = #{username}
+    </select>
+
+    <select id="selectByEmail" resultType="User">
+        SELECT <include refid="fileds"></include> FROM user where email = #{email}
+    </select>
+
+    <update id="updateUserStatus">
+        update user set status = #{status} where id = #{id}
+    </update>
 </mapper>

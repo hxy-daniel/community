@@ -7,4 +7,12 @@ import org.apache.ibatis.annotations.Mapper;
 public interface UserDao {
 
     public User getUserById (int userId);
+
+    public int insertUser (User user);
+
+    public User selectByName (String username);
+
+    public User selectByEmail (String email);
+
+    public int updateUserStatus (int id, int status);
 }
