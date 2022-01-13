@@ -1,10 +1,10 @@
 package com.cqupt.community.entity;
 
 public class Page {
-    int currentPage = 1;
-    int pageSize = 10;
-    int totals;
-    String path = "/index";
+    private int currentPage = 1;
+    private int pageSize = 10;
+    private int totals;
+    private String path = "/index";
 
     @Override
     public String toString() {

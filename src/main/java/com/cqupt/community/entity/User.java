@@ -3,15 +3,15 @@ package com.cqupt.community.entity;
 import java.util.Date;
 
 public class User {
-    int id;
-    String username;
-    String password;
-    String salt;
-    String email;
-    int type;
-    int status;
-    String activationCode;
-    String headerUrl;
+    private int id;
+    private String username;
+    private String password;
+    private String salt;
+    private String email;
+    private int type;
+    private int status;
+    private String activationCode;
+    private String headerUrl;
 
     @Override
     public String toString() {

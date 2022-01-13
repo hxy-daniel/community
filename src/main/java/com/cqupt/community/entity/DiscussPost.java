@@ -3,15 +3,15 @@ package com.cqupt.community.entity;
 import java.util.Date;
 
 public class DiscussPost {
-    int id;
-    String userId;
-    String title;
-    String content;
-    int type;
-    int status;
-    Date createTime;
-    int commentCount;
-    double score;
+    private int id;
+    private String userId;
+    private String title;
+    private String content;
+    private int type;
+    private int status;
+    private Date createTime;
+    private int commentCount;
+    private double score;
 
 
     public int getId() {
