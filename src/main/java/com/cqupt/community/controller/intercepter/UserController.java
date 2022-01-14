@@ -88,6 +88,7 @@ public class UserController {
                 ){
             byte[] buffer = new byte[1024];
             int b = 0;
+
             while ((b = fileInputStream.read(buffer)) != -1) {
                 outputStream.write(buffer,0, b);
             }
