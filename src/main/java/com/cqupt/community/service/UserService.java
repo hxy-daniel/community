@@ -96,7 +96,7 @@ public class UserService implements CommunityConstant {
         user.setSalt(CommunityUtil.generateUUID().substring(0,5));
         user.setStatus(0);
         user.setType(0);
-        user.setHeaderUrl(String.format("http://images.nowcoder.com/head/%dt.png\"", new Random().nextInt(1000)));
+        user.setHeaderUrl(String.format("http://images.nowcoder.com/head/%dt.png", new Random().nextInt(1000)));
         user.setPassword(CommunityUtil.md5(user.getPassword() + user.getSalt()));
         int i = userDao.insertUser(user);
         // 邮件处理
@@ -165,5 +165,13 @@ public class UserService implements CommunityConstant {
 
         res.put("ticket", ticket);
         return res;
+    }
+
+    public LoginTicket selectLoginTicket(String ticket) {
+        return loginTicketDao.selectByTicket(ticket);
+    }
+
+    public int updateUserHeaderUrl(int userId, String headerUrl){
+        return userDao.updateUserHeaderUrl(userId, headerUrl);
     }
 }

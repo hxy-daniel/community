@@ -15,4 +15,6 @@ public interface UserDao {
     public User selectByEmail (String email);
 
     public int updateUserStatus (int id, int status);
+
+    public int updateUserHeaderUrl(int userId, String headerUrl);
 }
