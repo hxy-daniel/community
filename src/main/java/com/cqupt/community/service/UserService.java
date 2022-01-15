@@ -4,9 +4,7 @@ import com.cqupt.community.dao.LoginTicketDao;
 import com.cqupt.community.dao.UserDao;
 import com.cqupt.community.entity.LoginTicket;
 import com.cqupt.community.entity.User;
-import com.cqupt.community.util.CommunityConstant;
-import com.cqupt.community.util.CommunityUtil;
-import com.cqupt.community.util.MailUtil;
+import com.cqupt.community.util.*;
 import javafx.beans.binding.ObjectExpression;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +39,9 @@ public class UserService implements CommunityConstant {
 
     @Autowired
     private LoginTicketDao loginTicketDao;
+
+    @Autowired
+    private HostHolder hostHolder;
 
     // 根据id查询用户
     public User getUserById(int userId) {
@@ -173,5 +174,31 @@ public class UserService implements CommunityConstant {
 
     public int updateUserHeaderUrl(int userId, String headerUrl){
         return userDao.updateUserHeaderUrl(userId, headerUrl);
+    }
+
+    public Map<String, Object> updatePassword(String ticket, String originPassword, String newPassword) {
+
+        Map<String, Object> map = new HashMap<>();
+        if (StringUtils.isBlank(originPassword)) {
+            map.put("originPasswordError", "请输入原始密码！");
+            return map;
+        }
+
+        if (StringUtils.isBlank(newPassword)) {
+            map.put("newPasswordError", "请输入新的密码！");
+            return map;
+        }
+
+        User user = hostHolder.getUser();
+        String mdPass = CommunityUtil.md5(originPassword);
+        if (!CommunityUtil.md5(originPassword + user.getSalt()).equals(user.getPassword())) {
+            map.put("originPasswordError", "原始密码错误！");
+            return map;
+        }
+
+        int userId = user.getId();
+        userDao.updateUserPassword(userId, CommunityUtil.md5(newPassword  + user.getSalt()));
+        loginTicketDao.updateStatus(ticket, 1);
+        return map;
     }
 }

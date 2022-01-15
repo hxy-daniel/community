@@ -34,4 +34,8 @@
     <update id="updateUserHeaderUrl">
         update user set header_url = #{headerUrl} where id = #{userId}
     </update>
+
+    <update id="updateUserPassword">
+        update user set password = #{password} where id = #{userId}
+    </update>
 </mapper>

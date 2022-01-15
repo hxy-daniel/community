@@ -17,4 +17,6 @@ public interface UserDao {
     public int updateUserStatus (int id, int status);
 
     public int updateUserHeaderUrl(int userId, String headerUrl);
+
+    public int updateUserPassword(int userId, String password);
 }

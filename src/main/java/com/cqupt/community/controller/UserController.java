@@ -1,7 +1,9 @@
-package com.cqupt.community.controller.intercepter;
+package com.cqupt.community.controller;
 
+import com.cqupt.community.annotation.LoginRequired;
 import com.cqupt.community.service.UserService;
 import com.cqupt.community.util.CommunityUtil;
+import com.cqupt.community.util.CookieUtil;
 import com.cqupt.community.util.HostHolder;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -15,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.Map;
 
 @Controller
 @RequestMapping(path = "/user")
@@ -41,11 +43,13 @@ public class UserController {
     @Autowired
     private HostHolder hostHolder;
 
+    @LoginRequired
     @RequestMapping(path = "/setting", method = RequestMethod.GET)
     public String setting() {
         return "/site/setting";
     }
 
+    @LoginRequired
     @RequestMapping(path = "/upload", method = RequestMethod.POST)
     public String upload(MultipartFile headerImage, Model model) {
         if (headerImage == null) {
@@ -95,5 +99,22 @@ public class UserController {
         } catch (IOException e) {
             logger.error("读取头像失败！" + e);
         }
+    }
+
+    @LoginRequired
+    @RequestMapping(path = "/updatePassword", method = RequestMethod.POST)
+    public String updatePassword(HttpServletRequest request, String originPassword, String newPassword, Model model) {
+        String ticket = CookieUtil.getValue(request, "ticket");
+        Map<String, Object> map = userService.updatePassword(ticket, originPassword, newPassword);
+        if (map.containsKey("originPasswordError")) {
+            model.addAttribute("originPasswordMsg", map.get("originPasswordError"));
+            return "/site/setting";
+        }
+
+        if (map.containsKey("newPasswordError")) {
+            model.addAttribute("newPasswordMsg", map.get("newPasswordError"));
+            return "/site/setting";
+        }
+        return "/site/login";
     }
 }
