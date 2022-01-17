@@ -19,4 +19,12 @@ public class DiscussPostService {
     public int getTotals(int userId) {
         return discussPostDao.getTotals(userId);
     }
+
+    public int addDiscussPost(DiscussPost discussPost) {
+        return discussPostDao.addDiscussPost(discussPost);
+    }
+
+    public DiscussPost selectDiscussPostById(int id) {
+        return discussPostDao.selectDiscussPostById(id);
+    }
 }

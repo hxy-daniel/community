@@ -6,6 +6,11 @@
     <sql id="fileds">
         id, user_id, title, content, type, status, create_time, comment_count, score
     </sql>
+
+    <sql id="insertFileds">
+        user_id, title, content, type, status, create_time, comment_count, score
+    </sql>
+
     <select id="getDiscussPosts" resultType="DiscussPost">
         SELECT <include refid="fileds"></include> FROM discuss_post where status != 2
         <if test="userId != 0">
@@ -14,14 +19,23 @@
         order by type desc, create_time desc
         limit #{offset}, #{limit}
     </select>
-    <select id="getOneDiscussPost" resultType="DiscussPost">
-        SELECT <include refid="fileds"></include> FROM discuss_post where id = 109
-    </select>
+<!--    <select id="getOneDiscussPost" resultType="DiscussPost">-->
+<!--        SELECT <include refid="fileds"></include> FROM discuss_post where id = 109-->
+<!--    </select>-->
 
     <select id="getTotals" resultType="int">
         SELECT count(*) FROM discuss_post where status != 2
         <if test="userId != 0">
             and user_id = #{userId}
         </if>
+    </select>
+
+    <insert id="addDiscussPost">
+        insert into discuss_post(<include refid="insertFileds"></include>) values (#{userId}, #{title}, #{content}, #{type}, #{status},
+                                            #{createTime}, #{commentCount}, #{score})
+    </insert>
+
+    <select id="selectDiscussPostById" resultType="DiscussPost">
+        select <include refid="fileds"></include> from discuss_post where id = #{id}
     </select>
 </mapper>
