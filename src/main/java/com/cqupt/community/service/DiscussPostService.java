@@ -27,4 +27,8 @@ public class DiscussPostService {
     public DiscussPost selectDiscussPostById(int id) {
         return discussPostDao.selectDiscussPostById(id);
     }
+
+    public int updateCommentCount(int id, int commentCount) {
+        return discussPostDao.updateCommentCount(id, commentCount);
+    }
 }

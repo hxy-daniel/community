@@ -1,10 +1,14 @@
 package com.cqupt.community.controller;
 
 import com.alibaba.fastjson.support.hsf.HSFJSONUtils;
+import com.cqupt.community.entity.Comment;
 import com.cqupt.community.entity.DiscussPost;
+import com.cqupt.community.entity.Page;
 import com.cqupt.community.entity.User;
+import com.cqupt.community.service.CommentService;
 import com.cqupt.community.service.DiscussPostService;
 import com.cqupt.community.service.UserService;
+import com.cqupt.community.util.CommunityConstant;
 import com.cqupt.community.util.HostHolder;
 import com.cqupt.community.util.JsonResponseUtils;
 import com.cqupt.community.util.SensitiveWordFilter;
@@ -18,14 +22,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.HtmlUtils;
 import org.unbescape.html.HtmlEscape;
 
-import java.util.Date;
+import java.util.*;
 
 /**
  * 帖子Controller
  */
 @Controller
 @RequestMapping(path = "/discussPost")
-public class DiscussPostController {
+public class DiscussPostController implements CommunityConstant {
 
     @Autowired
     private HostHolder hostHolder;
@@ -38,6 +42,9 @@ public class DiscussPostController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private CommentService commentService;
 
     /**
      * 发布帖子
@@ -76,11 +83,55 @@ public class DiscussPostController {
      * @return
      */
     @RequestMapping(path = "/detail/{id}", method = RequestMethod.GET)
-    public String selectDiscussPostById(@PathVariable("id") int id, Model model) {
+    public String selectDiscussPostById(@PathVariable("id") int id, Model model, Page page) {
+        // 查询帖子
         DiscussPost discussPost = discussPostService.selectDiscussPostById(id);
         model.addAttribute("discussPost", discussPost);
         User user = userService.getUserById(Integer.parseInt(discussPost.getUserId()));
         model.addAttribute("user", user);
+
+        // 处理评论和回复
+        page.setPageSize(5);
+        page.setPath("/discussPost/detail/" + id);
+        page.setTotals(discussPost.getCommentCount());
+
+        List<Map<String, Object>> commentList = new ArrayList<>();
+        List<Comment> comments = commentService.selectComment(ENTITY_TYPE_DISCUSSPOST, id, page.getOffSet(), page.getPageSize());
+        if (comments != null) {
+            for(Comment comment : comments) {
+                Map<String, Object> commentMap = new HashMap<>();
+                // 评论
+                commentMap.put("comment", comment);
+                User commentUser = userService.getUserById(comment.getUserId());
+                // 评论用户
+                commentMap.put("user", commentUser);
+                List<Comment> subComments = commentService.selectComment(ENTITY_TYPE_COMMENT, comment.getId(), 0, Integer.MAX_VALUE);
+
+                List<Map<String, Object>> subCommentList = new ArrayList<>();
+                if (subCommentList != null) {
+                    for(Comment subComment : subComments) {
+                        Map<String, Object> subCommentMap = new HashMap<>();
+                        // 回复
+                        subCommentMap.put("comment", subComment);
+                        User subCommentUser = userService.getUserById(subComment.getUserId());
+                        // 回复用户
+                        subCommentMap.put("user", subCommentUser);
+                        User targetUser = subComment.getTargetId() == 0 ? null : userService.getUserById(subComment.getTargetId());
+                        // 回复目标用户
+                        subCommentMap.put("targetUser", targetUser);
+                        subCommentList.add(subCommentMap);
+                    }
+                }
+                commentMap.put("subCommentList", subCommentList);
+                // 回复数量
+                int replyCount = commentService.getCommentCount(ENTITY_TYPE_COMMENT, comment.getId());
+                commentMap.put("replyCount", replyCount);
+                commentList.add(commentMap);
+            }
+        }
+
+
+        model.addAttribute("commentList", commentList);
         return "/site/discuss-detail";
     }
 }

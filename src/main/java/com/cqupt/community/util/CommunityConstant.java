@@ -19,4 +19,14 @@ public interface CommunityConstant {
      * 长期登录时间
      */
     int REMEMBER_EXPIRED_SECONDS = 60 * 60 * 24 * 7;
+
+    /**
+     * 属于帖子的评论
+     */
+    int ENTITY_TYPE_DISCUSSPOST = 1;
+
+    /**
+     * 属于回复的评论
+     */
+    int ENTITY_TYPE_COMMENT = 2;
 }

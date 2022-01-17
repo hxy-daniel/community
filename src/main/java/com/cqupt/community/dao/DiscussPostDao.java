@@ -41,4 +41,6 @@ public interface DiscussPostDao {
     public int addDiscussPost(DiscussPost discussPost);
 
     public DiscussPost selectDiscussPostById(int id);
+
+    public int updateCommentCount(int id, int commentCount);
 }
