@@ -40,6 +40,7 @@ public class MessageController {
         page.setPath("/letter/list");
         int userId = hostHolder.getUser().getId();
         page.setTotals(messageService.selectConversationCount(userId));
+        // TODO:分页最后一页空白bug
 
         List<Message> messages = messageService.selectConversations(userId, page.getOffSet(), page.getPageSize());
         model.addAttribute("unReadCount", messageService.selectUnReadCount(userId, null));
