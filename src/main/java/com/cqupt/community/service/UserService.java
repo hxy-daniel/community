@@ -201,4 +201,8 @@ public class UserService implements CommunityConstant {
         loginTicketDao.updateStatus(ticket, 1);
         return map;
     }
+
+    public User selectByName(String username) {
+        return userDao.selectByName(username);
+    }
 }

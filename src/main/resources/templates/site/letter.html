@@ -66,7 +66,7 @@
 					<!-- 选项 -->
 					<ul class="nav nav-tabs mb-3">
 						<li class="nav-item">
-							<a class="nav-link position-relative active" href="letter.html">朋友私信<span class="badge badge-danger" th:text="${unReadCount}">3</span></a>
+							<a class="nav-link position-relative active" href="letter.html">朋友私信<span class="badge badge-danger" th:if="${unReadCount!=0}" th:text="${unReadCount}">3</span></a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link position-relative" href="notice.html">系统通知<span class="badge badge-danger">27</span></a>
@@ -92,7 +92,7 @@
 									</div>
 									<div class="form-group">
 										<label for="message-text" class="col-form-label">内容：</label>
-										<textarea class="form-control" id="message-text" rows="10"></textarea>
+										<textarea class="form-control" id="message-text" name="content" rows="10"></textarea>
 									</div>
 								</form>
 							</div>
@@ -132,7 +132,7 @@
 							<div>
 								<a href="letter-detail.html" th:utext="${conversationItem.conversation.content}">米粉车, 你来吧!</a>
 								<ul class="d-inline font-size-12 float-right">
-									<li class="d-inline ml-2"><a th:href="@{/letter/detail/${conversationItem.conversation.id}}" class="text-primary">共<i th:text="${conversationItem.letterCount}"></i>条会话</a></li>
+									<li class="d-inline ml-2"><a th:href="@{|/letter/detail/${conversationItem.conversation.conversationId}|}" class="text-primary">共<i th:text="${conversationItem.letterCount}"></i>条会话</a></li>
 								</ul>
 							</div>
 						</div>

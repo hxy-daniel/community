@@ -38,4 +38,26 @@ public interface MessageDao {
      * @return
      */
     public int selectConversationCount(int userId);
+
+
+    /**
+     * 查询会话详情
+     * @param conversationId
+     * @return
+     */
+    public List<Message> selectConversationDetail(String conversationId, int offset, int limit);
+
+    /**
+     * 发送私信
+     * @param message
+     * @return
+     */
+    public int insertLetter(Message message);
+
+    /**
+     * 设置消息为已读
+     * @param id
+     * @return
+     */
+    public int updateStatus(List<Integer> ids, int status);
 }
