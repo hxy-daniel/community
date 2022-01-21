@@ -1,5 +1,6 @@
 package com.cqupt.community.controller;
 
+import com.cqupt.community.annotation.LoginRequired;
 import com.cqupt.community.entity.User;
 import com.cqupt.community.service.LikeService;
 import com.cqupt.community.util.HostHolder;
@@ -25,10 +26,11 @@ public class LikeController {
 
     @RequestMapping(path = "/doLike", method = RequestMethod.POST)
     @ResponseBody
-    public String doLike(int entityType, int entityId) {
+    @LoginRequired
+    public String doLike(int entityType, int entityId, int targetUserId) {
         User user = hostHolder.getUser();
-        likeService.like(user.getId(), entityType, entityId);
-        int isLiked = likeService.isLiked(user.getId(), entityType, entityId);
+        likeService.like(user.getId(), entityType, entityId, targetUserId);
+        int isLiked = (user == null) ? 0 : likeService.isLiked(user.getId(), entityType, entityId);
         long likeCount = likeService.likeCount(entityType, entityId);
         Map<String, Object> map = new HashMap<>();
         map.put("isLiked", isLiked);

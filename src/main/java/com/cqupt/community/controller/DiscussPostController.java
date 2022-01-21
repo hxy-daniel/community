@@ -75,7 +75,7 @@ public class DiscussPostController implements CommunityConstant {
         discussPost.setTitle(title);
         discussPost.setContent(content);
         discussPost.setCreateTime(new Date());
-        discussPost.setUserId(String.valueOf(user.getId()));
+        discussPost.setUserId(user.getId());
         discussPostService.addDiscussPost(discussPost);
         return JsonResponseUtils.toJsonResponse(200, "发布成功！");
     }
@@ -91,10 +91,10 @@ public class DiscussPostController implements CommunityConstant {
         // 查询帖子
         DiscussPost discussPost = discussPostService.selectDiscussPostById(id);
         model.addAttribute("discussPost", discussPost);
-        User user = userService.getUserById(Integer.parseInt(discussPost.getUserId()));
+        User user = userService.getUserById(discussPost.getUserId());
         model.addAttribute("user", user);
         model.addAttribute("likeCount", likeService.likeCount(1, discussPost.getId()));
-        model.addAttribute("isLiked", likeService.isLiked(hostHolder.getUser().getId(), 1, discussPost.getId()));
+        model.addAttribute("isLiked", hostHolder.getUser() == null ? 0 : likeService.isLiked(hostHolder.getUser().getId(), 1, discussPost.getId()));
         // 处理评论和回复
         page.setPageSize(5);
         page.setPath("/discussPost/detail/" + id);
@@ -125,7 +125,7 @@ public class DiscussPostController implements CommunityConstant {
                         // 回复目标用户
                         subCommentMap.put("targetUser", targetUser);
                         subCommentMap.put("likeCount", likeService.likeCount(2, subComment.getId()));
-                        subCommentMap.put("isLiked", likeService.isLiked(hostHolder.getUser().getId(), 2, subComment.getId()));
+                        subCommentMap.put("isLiked", hostHolder.getUser() == null ? 0 : likeService.isLiked(hostHolder.getUser().getId(), 2, subComment.getId()));
                         subCommentList.add(subCommentMap);
                     }
                 }
@@ -134,7 +134,7 @@ public class DiscussPostController implements CommunityConstant {
                 int replyCount = commentService.getCommentCount(ENTITY_TYPE_COMMENT, comment.getId());
                 commentMap.put("replyCount", replyCount);
                 commentMap.put("likeCount", likeService.likeCount(2, comment.getId()));
-                commentMap.put("isLiked", likeService.isLiked(hostHolder.getUser().getId(), 2, comment.getId()));
+                commentMap.put("isLiked", hostHolder.getUser() == null ? 0 : likeService.isLiked(hostHolder.getUser().getId(), 2, comment.getId()));
                 commentList.add(commentMap);
             }
         }

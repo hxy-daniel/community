@@ -1,6 +1,8 @@
 package com.cqupt.community.controller;
 
 import com.cqupt.community.annotation.LoginRequired;
+import com.cqupt.community.entity.User;
+import com.cqupt.community.service.LikeService;
 import com.cqupt.community.service.UserService;
 import com.cqupt.community.util.CommunityUtil;
 import com.cqupt.community.util.CookieUtil;
@@ -42,6 +44,9 @@ public class UserController {
 
     @Autowired
     private HostHolder hostHolder;
+
+    @Autowired
+    private LikeService likeService;
 
     @LoginRequired
     @RequestMapping(path = "/setting", method = RequestMethod.GET)
@@ -116,5 +121,14 @@ public class UserController {
             return "/site/setting";
         }
         return "/site/login";
+    }
+
+    @RequestMapping(path = "/profile/{userId}", method = RequestMethod.GET)
+    public String profile(@PathVariable("userId") int userId, Model model) {
+        User user = userService.getUserById(userId);
+        model.addAttribute("user", user);
+        int userLikeCount = likeService.getUserLikeCount(userId);
+        model.addAttribute("likeCount", userLikeCount);
+        return "/site/profile";
     }
 }

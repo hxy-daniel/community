@@ -34,7 +34,7 @@ public class IndexController {
         for (DiscussPost post : list) {
             Map<String, Object> map = new HashMap<>();
             map.put("post", post);
-            User user = userService.getUserById(Integer.parseInt(post.getUserId()));
+            User user = userService.getUserById(post.getUserId());
             map.put("user", user);
             disscussPosts.add(map);
         }
