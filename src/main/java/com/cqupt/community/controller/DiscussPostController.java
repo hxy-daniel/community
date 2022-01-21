@@ -7,6 +7,7 @@ import com.cqupt.community.entity.Page;
 import com.cqupt.community.entity.User;
 import com.cqupt.community.service.CommentService;
 import com.cqupt.community.service.DiscussPostService;
+import com.cqupt.community.service.LikeService;
 import com.cqupt.community.service.UserService;
 import com.cqupt.community.util.CommunityConstant;
 import com.cqupt.community.util.HostHolder;
@@ -45,6 +46,9 @@ public class DiscussPostController implements CommunityConstant {
 
     @Autowired
     private CommentService commentService;
+
+    @Autowired
+    private LikeService likeService;
 
     /**
      * 发布帖子
@@ -89,7 +93,8 @@ public class DiscussPostController implements CommunityConstant {
         model.addAttribute("discussPost", discussPost);
         User user = userService.getUserById(Integer.parseInt(discussPost.getUserId()));
         model.addAttribute("user", user);
-
+        model.addAttribute("likeCount", likeService.likeCount(1, discussPost.getId()));
+        model.addAttribute("isLiked", likeService.isLiked(hostHolder.getUser().getId(), 1, discussPost.getId()));
         // 处理评论和回复
         page.setPageSize(5);
         page.setPath("/discussPost/detail/" + id);
@@ -119,6 +124,8 @@ public class DiscussPostController implements CommunityConstant {
                         User targetUser = subComment.getTargetId() == 0 ? null : userService.getUserById(subComment.getTargetId());
                         // 回复目标用户
                         subCommentMap.put("targetUser", targetUser);
+                        subCommentMap.put("likeCount", likeService.likeCount(2, subComment.getId()));
+                        subCommentMap.put("isLiked", likeService.isLiked(hostHolder.getUser().getId(), 2, subComment.getId()));
                         subCommentList.add(subCommentMap);
                     }
                 }
@@ -126,6 +133,8 @@ public class DiscussPostController implements CommunityConstant {
                 // 回复数量
                 int replyCount = commentService.getCommentCount(ENTITY_TYPE_COMMENT, comment.getId());
                 commentMap.put("replyCount", replyCount);
+                commentMap.put("likeCount", likeService.likeCount(2, comment.getId()));
+                commentMap.put("isLiked", likeService.isLiked(hostHolder.getUser().getId(), 2, comment.getId()));
                 commentList.add(commentMap);
             }
         }
