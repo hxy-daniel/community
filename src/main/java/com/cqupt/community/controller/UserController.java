@@ -2,8 +2,10 @@ package com.cqupt.community.controller;
 
 import com.cqupt.community.annotation.LoginRequired;
 import com.cqupt.community.entity.User;
+import com.cqupt.community.service.FollowService;
 import com.cqupt.community.service.LikeService;
 import com.cqupt.community.service.UserService;
+import com.cqupt.community.util.CommunityConstant;
 import com.cqupt.community.util.CommunityUtil;
 import com.cqupt.community.util.CookieUtil;
 import com.cqupt.community.util.HostHolder;
@@ -26,7 +28,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping(path = "/user")
-public class UserController {
+public class UserController implements CommunityConstant {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -47,6 +49,9 @@ public class UserController {
 
     @Autowired
     private LikeService likeService;
+
+    @Autowired
+    private FollowService followService;
 
     @LoginRequired
     @RequestMapping(path = "/setting", method = RequestMethod.GET)
@@ -129,6 +134,13 @@ public class UserController {
         model.addAttribute("user", user);
         int userLikeCount = likeService.getUserLikeCount(userId);
         model.addAttribute("likeCount", userLikeCount);
+        boolean followed = false;
+        if (hostHolder.getUser() != null){
+            followed = followService.followed(hostHolder.getUser().getId(), ENTITY_TYPE_USER, userId);
+        }
+        model.addAttribute("followed", followed);
+        model.addAttribute("followeeCount", followService.followeeCount(userId, ENTITY_TYPE_USER));
+        model.addAttribute("followerCount", followService.followerCount(ENTITY_TYPE_USER, userId));
         return "/site/profile";
     }
 }

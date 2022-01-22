@@ -21,12 +21,19 @@ public interface CommunityConstant {
     int REMEMBER_EXPIRED_SECONDS = 60 * 60 * 24 * 7;
 
     /**
+     * 实体类型：帖子
      * 属于帖子的评论
      */
     int ENTITY_TYPE_DISCUSSPOST = 1;
 
     /**
+     * 实体类型：评论
      * 属于回复的评论
      */
     int ENTITY_TYPE_COMMENT = 2;
+
+    /**
+     * 实体类型：用户
+     */
+    int ENTITY_TYPE_USER = 3;
 }
