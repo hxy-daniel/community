@@ -11,6 +11,12 @@ public class RedisKeyUtil {
     private static final String PREFIX_FOLLOWEE = "followee";
     private static final String PREFIX_FOLLOWER = "follower";
 
+    private static final String PREFIX_CAPTCHA = "captcha";
+
+    public static final String PREFIX_TICKET = "ticket";
+
+    public static final String PREFIX_USER = "user";
+
     public static String getEntityLikeKey(int entityType, int entityId) {
         return PREFIX_ENTITY_LIKE + SPLIT + entityType + SPLIT + entityId;
     }
@@ -25,5 +31,17 @@ public class RedisKeyUtil {
 
     public static String getFollowerKey(int entityType, int entityId) {
         return PREFIX_FOLLOWER + SPLIT + entityType + SPLIT + entityId;
+    }
+
+    public static String getCaptchaKey(String owner) {
+        return PREFIX_CAPTCHA + SPLIT + owner;
+    }
+
+    public static String getTicketKey(String ticket) {
+        return PREFIX_TICKET + SPLIT + ticket;
+    }
+
+    public static String getUserKey(int userId) {
+        return PREFIX_USER + SPLIT + userId;
     }
 }

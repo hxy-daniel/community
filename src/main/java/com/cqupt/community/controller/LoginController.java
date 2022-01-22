@@ -5,12 +5,14 @@ import com.cqupt.community.entity.User;
 import com.cqupt.community.service.UserService;
 import com.cqupt.community.util.CommunityConstant;
 import com.cqupt.community.util.CommunityUtil;
+import com.cqupt.community.util.RedisKeyUtil;
 import com.google.code.kaptcha.Producer;
 import com.jhlabs.image.ImageUtils;
 import com.sun.imageio.plugins.common.ImageUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -28,6 +30,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 public class LoginController implements CommunityConstant {
@@ -43,6 +46,9 @@ public class LoginController implements CommunityConstant {
 
     @Autowired
     private LoginTicketDao loginTicketDao;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @RequestMapping(path = "/register", method = RequestMethod.GET)
     public String register(){
@@ -94,11 +100,31 @@ public class LoginController implements CommunityConstant {
 //        return null;
 //    }
 
-    // TODO:并发时验证码可能会有问题
+//    @RequestMapping(path = "/captcha", method = RequestMethod.GET)
+//    public void captcha(HttpServletResponse response, HttpSession session) {
+//        String text = captchaProducer.createText();
+//        session.setAttribute("captcha", text);
+//        BufferedImage image = captchaProducer.createImage(text);
+//        try {
+////            PrintWriter writer = response.getWriter();
+//            ServletOutputStream outputStream = response.getOutputStream();
+//            ImageIO.write(image, "png", outputStream);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
     @RequestMapping(path = "/captcha", method = RequestMethod.GET)
-    public void captcha(HttpServletResponse response, HttpSession session) {
+    public void captcha(HttpServletResponse response) {
         String text = captchaProducer.createText();
-        session.setAttribute("captcha", text);
+        String owner = CommunityUtil.generateUUID();
+        Cookie cookie = new Cookie("owner", owner);
+        cookie.setMaxAge(60);
+        cookie.setPath(contexPath);
+        response.addCookie(cookie);
+        String captchaKey = RedisKeyUtil.getCaptchaKey(owner);
+        redisTemplate.opsForValue().set(captchaKey, text, 60, TimeUnit.SECONDS);
+//        session.setAttribute("captcha", text);
         BufferedImage image = captchaProducer.createImage(text);
         try {
 //            PrintWriter writer = response.getWriter();
@@ -109,10 +135,38 @@ public class LoginController implements CommunityConstant {
         }
     }
 
+//    @RequestMapping(path = "/login", method = RequestMethod.POST)
+//    public String login(String username, String password, String code, boolean rememberme,
+//                        HttpServletResponse response, Model model, HttpSession session) {
+//        String captcha = (String) session.getAttribute("captcha");
+//        if (StringUtils.isBlank(code) || StringUtils.isBlank(captcha) || !code.equalsIgnoreCase(captcha)) {
+//            model.addAttribute("codeMsg","验证码错误！");
+//            return "/site/login";
+//        }
+//        int seconds = rememberme ? REMEMBER_EXPIRED_SECONDS : DEFAULT_EXPIRED_SECONDS;
+//        Map<String, Object> map = userService.login(username, password, seconds);
+//
+//        if (map.containsKey("ticket")) {
+//            Cookie cookie = new Cookie("ticket", (String) map.get("ticket"));
+//            cookie.setPath(contexPath);
+//            cookie.setMaxAge(seconds);
+//            response.addCookie(cookie);
+//            return "redirect:/index";
+//        } else {
+//            model.addAttribute("usernameMsg", map.get("usernameMsg"));
+//            model.addAttribute("passwordMsg", map.get("passwordMsg"));
+//            return "/site/login";
+//        }
+//    }
+
     @RequestMapping(path = "/login", method = RequestMethod.POST)
     public String login(String username, String password, String code, boolean rememberme,
-                        HttpServletResponse response, Model model, HttpSession session) {
-        String captcha = (String) session.getAttribute("captcha");
+                        HttpServletResponse response, Model model, @CookieValue("owner") String owner) {
+        String captcha = null;
+        if (!StringUtils.isBlank(owner)) {
+            String captchaKey = RedisKeyUtil.getCaptchaKey(owner);
+            captcha = (String) redisTemplate.opsForValue().get(captchaKey);
+        }
         if (StringUtils.isBlank(code) || StringUtils.isBlank(captcha) || !code.equalsIgnoreCase(captcha)) {
             model.addAttribute("codeMsg","验证码错误！");
             return "/site/login";
@@ -135,7 +189,8 @@ public class LoginController implements CommunityConstant {
 
     @RequestMapping(path = "/logout", method = RequestMethod.GET)
     public String logout(@CookieValue("ticket") String ticket) {
-        loginTicketDao.updateStatus(ticket, 1);
+//        loginTicketDao.updateStatus(ticket, 1);
+        userService.logout(ticket);
         return "redirect:/login";
     }
 }
