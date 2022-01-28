@@ -1,7 +1,9 @@
 package com.cqupt.community.controller;
 
+import com.cqupt.community.entity.Event;
 import com.cqupt.community.entity.Page;
 import com.cqupt.community.entity.User;
+import com.cqupt.community.event.EventProducer;
 import com.cqupt.community.service.FollowService;
 import com.cqupt.community.service.UserService;
 import com.cqupt.community.util.CommunityConstant;
@@ -29,10 +31,23 @@ public class FollowController implements CommunityConstant {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private EventProducer eventProducer;
+
     @RequestMapping(path = "/follow", method = RequestMethod.POST)
     @ResponseBody
     public String follow(int entityType, int entityId) {
         followService.follow(hostHolder.getUser().getId(), entityType, entityId);
+
+        // 触发关注事件
+        Event event = new Event()
+                .setTopic(TOPIC_FOLLOW)
+                .setUserId(hostHolder.getUser().getId())
+                .setEntityType(entityType)
+                .setEntityId(entityId)
+                .setEntityUserId(entityId);
+        eventProducer.fireEvent(event);
+
         return JsonResponseUtils.toJsonResponse(200, "关注成功");
     }
 

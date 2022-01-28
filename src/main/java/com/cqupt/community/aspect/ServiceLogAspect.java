@@ -43,6 +43,11 @@ public class ServiceLogAspect {
         // 日志格式：用户ip在time访问了method方法
         // 获取ip
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+
+        // 处理非controller请求，如kafka
+        if (requestAttributes == null) {
+            return;
+        }
         HttpServletRequest request = requestAttributes.getRequest();
         String ip = request.getRemoteHost();
         String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());

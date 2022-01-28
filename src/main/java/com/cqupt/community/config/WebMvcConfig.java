@@ -1,7 +1,8 @@
 package com.cqupt.community.config;
 
-import com.cqupt.community.controller.intercepter.LoginRequiredIntercepter;
-import com.cqupt.community.controller.intercepter.LoginTicketIntercepter;
+import com.cqupt.community.controller.interceptor.LoginRequiredInterceptor;
+import com.cqupt.community.controller.interceptor.LoginTicketInterceptor;
+import com.cqupt.community.controller.interceptor.MessageInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -10,15 +11,21 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
-    LoginTicketIntercepter loginTicketIntercepter;
+    LoginTicketInterceptor loginTicketInterceptor;
 
     @Autowired
-    LoginRequiredIntercepter loginRequiredIntercepter;
+    LoginRequiredInterceptor loginRequiredInterceptor;
+
+    @Autowired
+    MessageInterceptor messageInterceptor;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(loginTicketIntercepter).excludePathPatterns("/**/*.js", "/**/*.css",
+        registry.addInterceptor(loginTicketInterceptor).excludePathPatterns("/**/*.js", "/**/*.css",
                 "/**/*.png", "/**/*.jpg", "/**/*.jpeg");
-        registry.addInterceptor(loginRequiredIntercepter).excludePathPatterns("/**/*.js", "/**/*.css",
+        registry.addInterceptor(loginRequiredInterceptor).excludePathPatterns("/**/*.js", "/**/*.css",
+                "/**/*.png", "/**/*.jpg", "/**/*.jpeg");
+        registry.addInterceptor(messageInterceptor).excludePathPatterns("/**/*.js", "/**/*.css",
                 "/**/*.png", "/**/*.jpg", "/**/*.jpeg");
     }
 }

@@ -28,4 +28,9 @@ public interface CommentDao {
     })
     @Options(useGeneratedKeys = true, keyProperty = "id")
     public int addComment(Comment comment);
+
+    @Select({
+            "select id, user_id, entity_type, entity_id, target_id, content, status, create_time from comment where id = #{id}"
+    })
+    public Comment selectCommentById(int id);
 }

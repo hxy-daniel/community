@@ -1,4 +1,4 @@
-package com.cqupt.community.controller.intercepter;
+package com.cqupt.community.controller.interceptor;
 
 import com.cqupt.community.annotation.LoginRequired;
 import com.cqupt.community.util.HostHolder;
@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 
 @Component
-public class LoginRequiredIntercepter implements HandlerInterceptor {
+public class LoginRequiredInterceptor implements HandlerInterceptor {
     @Autowired
     private HostHolder hostHolder;
 

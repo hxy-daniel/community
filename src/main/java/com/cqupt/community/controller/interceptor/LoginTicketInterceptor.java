@@ -1,4 +1,4 @@
-package com.cqupt.community.controller.intercepter;
+package com.cqupt.community.controller.interceptor;
 
 import com.cqupt.community.entity.LoginTicket;
 import com.cqupt.community.entity.User;
@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 
 @Component
-public class LoginTicketIntercepter implements HandlerInterceptor {
+public class LoginTicketInterceptor implements HandlerInterceptor {
     @Autowired
     private UserService userService;
 
