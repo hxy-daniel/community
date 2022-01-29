@@ -5,14 +5,12 @@ import com.cqupt.community.entity.Comment;
 import com.cqupt.community.entity.DiscussPost;
 import com.cqupt.community.entity.Page;
 import com.cqupt.community.entity.User;
-import com.cqupt.community.service.CommentService;
-import com.cqupt.community.service.DiscussPostService;
-import com.cqupt.community.service.LikeService;
-import com.cqupt.community.service.UserService;
+import com.cqupt.community.service.*;
 import com.cqupt.community.util.CommunityConstant;
 import com.cqupt.community.util.HostHolder;
 import com.cqupt.community.util.JsonResponseUtils;
 import com.cqupt.community.util.SensitiveWordFilter;
+import org.elasticsearch.search.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.HtmlUtils;
 import org.unbescape.html.HtmlEscape;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -50,6 +49,9 @@ public class DiscussPostController implements CommunityConstant {
     @Autowired
     private LikeService likeService;
 
+    @Autowired
+    private ElasticsearchService searchService;
+
     /**
      * 发布帖子
      * @param title
@@ -58,7 +60,7 @@ public class DiscussPostController implements CommunityConstant {
      */
     @RequestMapping(path = "/addDiscussPost", method = RequestMethod.POST)
     @ResponseBody
-    public String addDiscussPost(String title, String content) {
+    public String addDiscussPost(String title, String content) throws IOException {
         // 判断用户是否登录
         User user = hostHolder.getUser();
         if (user == null) {
@@ -77,6 +79,8 @@ public class DiscussPostController implements CommunityConstant {
         discussPost.setCreateTime(new Date());
         discussPost.setUserId(user.getId());
         discussPostService.addDiscussPost(discussPost);
+        // 添加到Elasticsearch
+        searchService.saveDiscussPost(discussPost);
         return JsonResponseUtils.toJsonResponse(200, "发布成功！");
     }
 
