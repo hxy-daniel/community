@@ -1,5 +1,6 @@
 package com.cqupt.community.config;
 
+import com.cqupt.community.controller.interceptor.DataInterceptor;
 import com.cqupt.community.controller.interceptor.LoginRequiredInterceptor;
 import com.cqupt.community.controller.interceptor.LoginTicketInterceptor;
 import com.cqupt.community.controller.interceptor.MessageInterceptor;
@@ -19,6 +20,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
     MessageInterceptor messageInterceptor;
 
+    @Autowired
+    DataInterceptor dataInterceptor;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginTicketInterceptor).excludePathPatterns("/**/*.js", "/**/*.css",
@@ -26,6 +30,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
 //        registry.addInterceptor(loginRequiredInterceptor).excludePathPatterns("/**/*.js", "/**/*.css",
 //                "/**/*.png", "/**/*.jpg", "/**/*.jpeg");
         registry.addInterceptor(messageInterceptor).excludePathPatterns("/**/*.js", "/**/*.css",
+                "/**/*.png", "/**/*.jpg", "/**/*.jpeg");
+
+        registry.addInterceptor(dataInterceptor).excludePathPatterns("/**/*.js", "/**/*.css",
                 "/**/*.png", "/**/*.jpg", "/**/*.jpeg");
     }
 }
