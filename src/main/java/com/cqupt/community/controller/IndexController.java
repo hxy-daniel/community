@@ -50,4 +50,13 @@ public class IndexController implements CommunityConstant {
         return "/index";
     }
 
+    /**
+     * 权限不足拦截
+     * @return
+     */
+    @RequestMapping(path = "/denied", method = RequestMethod.GET)
+    public String getDeniedPage() {
+        return "/error/404";
+    }
+
 }
