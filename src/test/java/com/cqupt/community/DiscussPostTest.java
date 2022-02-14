@@ -19,7 +19,7 @@ public class DiscussPostTest {
     DiscussPostDao discussPostDao;
     @Test
     public void getNewestDiscussPostsTest() {
-        List<DiscussPost> discussPosts = discussPostDao.getDiscussPosts(0, 0, 10);
+        List<DiscussPost> discussPosts = discussPostDao.getDiscussPosts(0, 0, 10, 0);
         for (DiscussPost post : discussPosts) {
             System.out.println(post);
         }

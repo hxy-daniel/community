@@ -12,8 +12,8 @@ public class DiscussPostService {
     @Autowired
     DiscussPostDao discussPostDao;
 
-    public List<DiscussPost> getDiscussPosts(int userId, int offset, int limit){
-        return discussPostDao.getDiscussPosts(userId, offset, limit);
+    public List<DiscussPost> getDiscussPosts(int userId, int offset, int limit, int orderMode){
+        return discussPostDao.getDiscussPosts(userId, offset, limit, orderMode);
     }
 
     public int getTotals(int userId) {
@@ -38,5 +38,9 @@ public class DiscussPostService {
 
     public int updateStatus(int id, int status) {
         return discussPostDao.updateStatus(id, status);
+    }
+
+    public int updateScore(int id, double score) {
+        return discussPostDao.updateScore(id, score);
     }
 }

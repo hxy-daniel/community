@@ -8,7 +8,9 @@ import com.cqupt.community.service.CommentService;
 import com.cqupt.community.service.DiscussPostService;
 import com.cqupt.community.util.CommunityConstant;
 import com.cqupt.community.util.HostHolder;
+import com.cqupt.community.util.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +32,9 @@ public class CommentController implements CommunityConstant {
 
     @Autowired
     private EventProducer eventProducer;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @RequestMapping(path = "/add/{discussPostId}", method = RequestMethod.POST)
     public String addComment(Comment comment, @PathVariable("discussPostId") int discussPostId){
@@ -53,6 +58,19 @@ public class CommentController implements CommunityConstant {
             event.setEntityUserId(target.getUserId());
         }
         eventProducer.fireEvent(event);
+
+        if (comment.getEntityType() == ENTITY_TYPE_DISCUSSPOST) {
+            // 触发发帖事件
+            event = new Event()
+                    .setTopic(TOPIC_PUBLISH)
+                    .setUserId(comment.getUserId())
+                    .setEntityType(ENTITY_TYPE_DISCUSSPOST)
+                    .setEntityId(discussPostId);
+            eventProducer.fireEvent(event);
+            // 计算帖子分数
+            String redisKey = RedisKeyUtil.getPostScoreKey();
+            redisTemplate.opsForSet().add(redisKey, discussPostId);
+        }
 
         return "redirect:/discussPost/detail/" + discussPostId;
     }

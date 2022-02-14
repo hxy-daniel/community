@@ -4,12 +4,10 @@ import com.alibaba.fastjson.support.hsf.HSFJSONUtils;
 import com.cqupt.community.entity.*;
 import com.cqupt.community.event.EventProducer;
 import com.cqupt.community.service.*;
-import com.cqupt.community.util.CommunityConstant;
-import com.cqupt.community.util.HostHolder;
-import com.cqupt.community.util.JsonResponseUtils;
-import com.cqupt.community.util.SensitiveWordFilter;
+import com.cqupt.community.util.*;
 import org.elasticsearch.search.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +18,7 @@ import org.springframework.web.util.HtmlUtils;
 import org.unbescape.html.HtmlEscape;
 
 import java.io.IOException;
+import java.lang.annotation.Retention;
 import java.util.*;
 
 /**
@@ -53,6 +52,9 @@ public class DiscussPostController implements CommunityConstant {
     @Autowired
     private EventProducer eventProducer;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     /**
      * 发布帖子
      * @param title
@@ -80,8 +82,20 @@ public class DiscussPostController implements CommunityConstant {
         discussPost.setCreateTime(new Date());
         discussPost.setUserId(user.getId());
         discussPostService.addDiscussPost(discussPost);
-        // 添加到Elasticsearch
-        searchService.saveDiscussPost(discussPost);
+//        // 添加到Elasticsearch
+//        searchService.saveDiscussPost(discussPost);
+        // 触发发帖事件
+        Event event = new Event()
+                .setTopic(TOPIC_PUBLISH)
+                .setUserId(user.getId())
+                .setEntityType(ENTITY_TYPE_DISCUSSPOST)
+                .setEntityId(discussPost.getId());
+        eventProducer.fireEvent(event);
+
+        // 计算帖子分数
+        String redisKey = RedisKeyUtil.getPostScoreKey();
+        redisTemplate.opsForSet().add(redisKey, discussPost.getId());
+
         return JsonResponseUtils.toJsonResponse(200, "发布成功！");
     }
 
@@ -179,6 +193,10 @@ public class DiscussPostController implements CommunityConstant {
                 .setEntityType(ENTITY_TYPE_DISCUSSPOST)
                 .setEntityId(id);
         eventProducer.fireEvent(event);
+
+        // 计算帖子分数
+        String redisKey = RedisKeyUtil.getPostScoreKey();
+        redisTemplate.opsForSet().add(redisKey, id);
 
         return JsonResponseUtils.toJsonResponse(200);
     }

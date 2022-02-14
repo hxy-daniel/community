@@ -20,6 +20,8 @@ public class RedisKeyUtil {
     public static final String PREFIX_UV = "uv";
     public static final String PREFIX_DAU = "dau";
 
+    public static final String PREFIX_POST = "post";
+
     public static String getEntityLikeKey(int entityType, int entityId) {
         return PREFIX_ENTITY_LIKE + SPLIT + entityType + SPLIT + entityId;
     }
@@ -66,5 +68,10 @@ public class RedisKeyUtil {
     // 区间活跃用户
     public static String getDAUKey(String startDate, String endDate) {
         return PREFIX_DAU + SPLIT + startDate + SPLIT + endDate;
+    }
+
+    // 帖子变动id定时任务
+    public static String getPostScoreKey() {
+        return PREFIX_POST + SPLIT + "score";
     }
 }

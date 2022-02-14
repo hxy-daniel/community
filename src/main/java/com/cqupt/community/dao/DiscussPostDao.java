@@ -18,7 +18,7 @@ public interface DiscussPostDao {
      * @param limit
      * @return
      */
-    public List<DiscussPost> getDiscussPosts(int userId, int offset, int limit);
+    public List<DiscussPost> getDiscussPosts(int userId, int offset, int limit, int orderMode);
 
     /**
      * 获取总帖子数
@@ -47,4 +47,6 @@ public interface DiscussPostDao {
     public int updateType(int id, int type);
 
     public int updateStatus(int id, int status);
+
+    public int updateScore(int id, double score);
 }

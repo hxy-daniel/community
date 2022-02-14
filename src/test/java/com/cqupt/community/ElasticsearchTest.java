@@ -62,7 +62,7 @@ public class ElasticsearchTest {
     @Test
     public void testInsertList() throws IOException {
 //        elasticsearchRepository.saveAll(discussPostDao.getDiscussPosts(101, 0, 100));
-        List<DiscussPost> discussPosts = discussPostDao.getDiscussPosts(101, 0, 100);
+        List<DiscussPost> discussPosts = discussPostDao.getDiscussPosts(101, 0, 100, 0);
         BulkRequest bulkRequest = new BulkRequest();
         for (DiscussPost post : discussPosts) {
             bulkRequest.add(new IndexRequest("discusspost").source(JSON.toJSONString(post), XContentType.JSON));
