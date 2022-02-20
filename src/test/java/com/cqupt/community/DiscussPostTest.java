@@ -24,4 +24,12 @@ public class DiscussPostTest {
             System.out.println(post);
         }
     }
+
+    @Test
+    public void testCache() {
+        System.out.println(discussPostDao.getDiscussPosts(0, 0, 10, 1));
+        System.out.println(discussPostDao.getDiscussPosts(0, 0, 10, 1));
+        System.out.println(discussPostDao.getDiscussPosts(0, 0, 10, 1));
+        System.out.println(discussPostDao.getDiscussPosts(0, 0, 10, 0));
+    }
 }

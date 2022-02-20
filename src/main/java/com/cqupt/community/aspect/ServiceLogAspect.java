@@ -22,7 +22,7 @@ import java.util.Date;
  * AOP统一记录日志
  */
 @Component
-@Aspect
+//@Aspect
 public class ServiceLogAspect {
     private static final Logger logger = LoggerFactory.getLogger(ServiceLogAspect.class);
 
