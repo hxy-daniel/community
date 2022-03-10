@@ -66,6 +66,6 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         hostHolder.clear();
         // 这里不能清空，否则第二次点击需要登录的链接会跳转到登录
-//        SecurityContextHolder.clearContext();
+        SecurityContextHolder.clearContext();
     }
 }
