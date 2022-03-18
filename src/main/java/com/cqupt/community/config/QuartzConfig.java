@@ -20,7 +20,10 @@ public class QuartzConfig {
         factoryBean.setJobClass(PostScoreRefreshJob.class);
         factoryBean.setName("postScoreRefreshJob");
         factoryBean.setGroup("communityJobGroup");
+        // 如果一个job是非持久的，当没有活跃的trigger与之关联的时候，会被自动地从scheduler中删除
         factoryBean.setDurability(true);
+        // 如果一个job是可恢复的，并且在其执行的时候，scheduler发生硬关闭（hard shutdown)，
+        // 则当scheduler重新启动的时候，该job会被重新执行。
         factoryBean.setRequestsRecovery(true);
         return factoryBean;
     }

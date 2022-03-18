@@ -50,7 +50,7 @@ public class MessageController implements CommunityConstant {
         for (Message m : messages) {
             Map<String, Object> map = new HashMap<>();
             map.put("conversation", m);
-            map.put("letterCount", messageService.selectLetterCount(m.getConversationId()));
+                map.put("letterCount", messageService.selectLetterCount(m.getConversationId()));
             map.put("unReadCount", messageService.selectUnReadCount(userId, m.getConversationId()));
             int targetUserId = hostHolder.getUser().getId() == m.getFromId() ? m.getToId() : m.getFromId();
             User targetUser = userService.getUserById(targetUserId);
